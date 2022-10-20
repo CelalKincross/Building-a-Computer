@@ -3,12 +3,17 @@
 // by Nisan and Schocken, MIT Press.
 // File name: projects/04/Fill.asm
 
+
+/////////  Pseudocode   ///////
 // Runs an infinite loop that listens to the keyboard input.
 // When a key is pressed (any key), the program blackens the screen,
-// i.e. writes "black" in every pixel;
+// i.e. writes "black" (-1 is 16 ones in binary) in every pixel;
 // the screen should remain fully black as long as the key is pressed. 
 // When no key is pressed, the program clears the screen, i.e. writes
-// "white" in every pixel;
+// "white" (0 is white all zeros in binary) in every pixel;
 // the screen should remain fully clear as long as no key is pressed.
 
 // Put your code here.
+
+(loop)
+    
