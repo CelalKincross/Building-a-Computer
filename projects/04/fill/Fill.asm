@@ -15,5 +15,37 @@
 
 // Put your code here.
 
-(loop)
+// initialize a variable with total pixels
+    @8192
+    D=M
+    @pixels
+    M=D //sets pixels to 8192- total number of pixels
     
+    @i 
+    M=0       // i = 0
+
+    (KBDCHECK)  //Checks to see if keyboard is pressed
+        @SCREEN  
+        D=A 
+        @addr
+        M=D         //addr = 16384 which is the base address for screen
+
+    
+        @KBD   //Keyboard address
+        D=M
+
+        @KBDOFF
+        D;JEQ    //if d is 0 then go to keyboard off loop
+        @KBDON
+        D; JNE    // if D is not zero go to keyboard on loop
+
+    // Fill the screen
+    (KBDON)
+        @i
+        D=M
+        @pixels
+        D=M-D
+        @KBDCHECK 
+        D; JGT    // if i is greater than pixels go to keyboard check
+
+        @addr
