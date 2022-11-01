@@ -24,28 +24,52 @@
     @i 
     M=0       // i = 0
 
-    (KBDCHECK)  //Checks to see if keyboard is pressed
-        @SCREEN  
-        D=A 
-        @addr
-        M=D         //addr = 16384 which is the base address for screen
+    //Continuous Loop that never ends
+    (KBDCHECK)      // checks to see if keyboard is pressed
+        @KBD        // keyboard address
+        D=M         // records keyboard output
 
-    
-        @KBD   //Keyboard address
-        D=M
-
-        @KBDOFF
-        D;JEQ    //if d is 0 then go to keyboard off loop
         @KBDON
         D; JNE    // if D is not zero go to keyboard on loop
 
-    // Fill the screen
-    (KBDON)
-        @i
-        D=M
-        @pixels
-        D=M-D
-        @KBDCHECK 
-        D; JGT    // if i is greater than pixels go to keyboard check
+        (KBDOFF)    // check addresses for screen ranging from  RAM[16384] to RAM[24575]
+            @i          // and enter 0 to make screen white
+            D=M 
+            @pixels     //number of pixels
+            D=D-M       //i - 8192
+            @KBDCHECK 
+            D;JGE       // if D is greater than or equal 0 would mean i is at 8192 and screen is white (0's in all pixels)
+                        // control goes to KBDCHECK
 
-        @addr
+            @SCREEN     // screen pointer 16384
+            D=A         
+            @i 
+            A=D+M        //A = 16384 + i 
+            M=0          // set to 0
+            @i
+            M=M+1        //set i+1  
+            
+            @KBDOFF
+            0;JMP       // continue till all 0's in screen mapping
+
+    
+
+        // Fill the screen
+        (KBDON)
+            @i
+            D=M
+            @pixels
+            D=D-M
+            @KBDCHECK 
+            D; JGE    // if i is greater than pixels go to keyboard check
+
+            @SCREEN     // change screen black (-1 is 16 1's in binary)
+            D=A         // get screen address and add i to it, then make that -1
+            @i
+            A=D+M 
+            M=-1
+            @i          // i + 1
+            M=M+1
+
+            @KBDON      // loop until screen is balck
+            0;JMP
