@@ -16,16 +16,17 @@
 // Put your code here.
 
 // initialize a variable with total pixels
-    @8192
-    D=M
-    @pixels
-    M=D //sets pixels to 8192- total number of pixels
-    
-    @i 
-    M=0       // i = 0
 
     //Continuous Loop that never ends
+        @8192
+        D=A 
+        @pixels
+        M=D //sets pixels to 8192- total number of pixels
     (KBDCHECK)      // checks to see if keyboard is pressed
+    
+        @i 
+        M=0       // i = 0
+        
         @KBD        // keyboard address
         D=M         // records keyboard output
 
@@ -71,5 +72,5 @@
             @i          // i + 1
             M=M+1
 
-            @KBDON      // loop until screen is balck
+            @KBDON      // loop until screen is black
             0;JMP
