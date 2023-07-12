@@ -40,4 +40,39 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
+    // Use the three destination bits to determin which reg will take the ALU output as input - A, D , or M.
+    DMux(in=true, sel=instruction[15], a=typeA, b=typeC);
+    Or(a=typeA, b=instruction[5], out=aInstr);
+    And(a=typeC, b=instruction[4], out=cInstr);
+
+    // A register configuration
+    Mux16(a=aluout, b=instruction, sel=typeA, out=regA);
+    ARegister(in=regA, load=aInstr, out=outa, out[0..14]=addressM);
+
+    // D register configuration
+    Mux16(a=outa, b=inM, sel=instruction[12], out=aluInput);
+    DRegister(in=aluout, load=cInstr, out=dregout);
+
+    // Alu config
+    ALU(x=dregout, y=aluInput, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=aluout, out=outM, zr=zero, ng=neg);
+    And(a=typeC, b=instruction[3], out=writeM);
+    
+    
+
+    // Program Counter
+    // We need to create the jump functionality- JMP in all cases, JGT jump when value greater than 0, JEQ jump when value equals zero, JGE greater than or equal to 0, JLT less than 0, JNE not equal to zero, JLE less than or equal to 0. Use zx and ng output from the alu to help compare the results from the input with the jump command. Note: JGT and JLE covers all jump conditions
+
+    /// Jump logic
+    Or(a=zero, b=neg, out=leqzero); // out <= 0
+    Not(in=leqzero, out=pos);  //out > 0
+
+    And(a=instruction[0], b=pos, out=jgt);  // out > 0 jump
+    And(a=instruction[1], b=zero, out=jeq); // out = 0 jump
+    And(a=instruction[2], b=neg, out=jlt);  // out < 0 jump
+    Or(a=jeq, b=jlt, out=jle);              // if out <= 0 jump
+    Or(a=jgt, b=jle, out=jmp);              // all jumps
+
+    And(a=jmp, b=typeC, out=doJmp);
+    Not(in=doJmp, out=noJmp);
+    PC(in=outa, load=doJmp, inc=noJmp, reset=reset, out[0..14]=pc);
 }
